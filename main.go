@@ -21,21 +21,27 @@ type Barang struct {
 	Stok  int
 }
 
+type SubTransaksi struct {
+	IDBarang     int
+	NamaBarang   string
+	HargaBarang  int
+	JumlahBarang int
+}
+
 type Transaksi struct {
-	ID              int
-	Time            string
-	IDBarang        [NMAX]int
-	JumlahPerBarang [NMAX]int
-	HargaPerJumlah  [NMAX]int
-	NJumlahBarang   int
-	TotalHarga      int
+	ID            int
+	Time          string
+	Item          [NMAX]SubTransaksi
+	NJumlahBarang int
+	TotalHarga    int
 }
 
 func main() {
 	var arrayTransaksi [NMAX]Transaksi
 	var arrayBarang [NMAX]Barang
-	var nTransaksi, nBarang int
+	var nTransaksi, nBarang, indexBarang int
 	var choice int
+
 	for choice != 5 {
 		mainMenu()
 		_, err := fmt.Scan(&choice)
@@ -44,11 +50,11 @@ func main() {
 		} else {
 			switch choice {
 			case 1:
-				dataBarang(&arrayBarang, &nBarang)
+				dataBarang(&arrayBarang, &nBarang, &indexBarang)
 			case 2:
 				tambahTransaksi(&arrayTransaksi, &nTransaksi, &arrayBarang, nBarang)
 			case 3:
-				logTransaksi(arrayTransaksi, nTransaksi, arrayBarang, nBarang)
+				logTransaksi(arrayTransaksi, nTransaksi)
 			case 4:
 				omzetTransaksi(arrayTransaksi, nTransaksi)
 			case 5:
@@ -87,7 +93,7 @@ func dataBarangMenu() {
 	fmt.Print("Pilih Menu (1/2/3/4/5/6): ")
 }
 
-func dataBarang(arrayBarang *[NMAX]Barang, nBarang *int) {
+func dataBarang(arrayBarang *[NMAX]Barang, nBarang *int, indexBarang *int) {
 	var choice int
 
 	for choice != 6 {
@@ -98,7 +104,7 @@ func dataBarang(arrayBarang *[NMAX]Barang, nBarang *int) {
 		} else {
 			switch choice {
 			case 1:
-				subTambahBarang(arrayBarang, nBarang)
+				subTambahBarang(arrayBarang, nBarang, indexBarang)
 			case 2:
 				subUbahBarang(arrayBarang, *nBarang)
 			case 3:
@@ -116,9 +122,9 @@ func dataBarang(arrayBarang *[NMAX]Barang, nBarang *int) {
 	}
 }
 
-func subTambahBarang(arrayBarang *[NMAX]Barang, nBarang *int) {
+func subTambahBarang(arrayBarang *[NMAX]Barang, nBarang *int, indexBarang *int) {
 	var barangTemp Barang
-	barangTemp.ID = *nBarang + 1
+	barangTemp.ID = *indexBarang + 1
 
 	fmt.Println()
 	fmt.Println("Tambah Barang")
@@ -157,6 +163,7 @@ func subTambahBarang(arrayBarang *[NMAX]Barang, nBarang *int) {
 	arrayBarang[*nBarang] = barangTemp
 
 	*nBarang++
+	*indexBarang++
 }
 
 func subUbahBarang(arrayBarang *[NMAX]Barang, nBarang int) {
@@ -377,7 +384,7 @@ func tambahTransaksi(arrayTransaksi *[NMAX]Transaksi, nTransaksi *int, arrayBara
 
 	for i := 0; i < len(arrayIDBarang); i++ {
 		var err error
-		transaksiTemp.IDBarang[i], err = strconv.Atoi(arrayIDBarang[i])
+		transaksiTemp.Item[i].IDBarang, err = strconv.Atoi(arrayIDBarang[i])
 		if err != nil {
 			fmt.Println("Input ID Barang tidak valid!")
 			return
@@ -396,19 +403,19 @@ func tambahTransaksi(arrayTransaksi *[NMAX]Transaksi, nTransaksi *int, arrayBara
 
 	arrayJumlahPerBarang := strings.Fields(inJumlahPerBarang)
 
-	for i := 0; i < len(arrayJumlahPerBarang); i++ {
-		var err error
-		transaksiTemp.JumlahPerBarang[i], err = strconv.Atoi(arrayJumlahPerBarang[i])
-		if err != nil {
-			fmt.Println("Input Jumlah per Barang tidak valid!")
-			return
-		}
-	}
-
 	if len(arrayIDBarang) != len(arrayJumlahPerBarang) {
 		fmt.Println()
 		fmt.Println("Input tidak valid. Jumlah ID Barang dan Jumlah per Barang tidak sama!")
 		return
+	}
+
+	for i := 0; i < len(arrayJumlahPerBarang); i++ {
+		var err error
+		transaksiTemp.Item[i].JumlahBarang, err = strconv.Atoi(arrayJumlahPerBarang[i])
+		if err != nil {
+			fmt.Println("Input Jumlah per Barang tidak valid!")
+			return
+		}
 	}
 
 	transaksiTemp.NJumlahBarang = len(arrayIDBarang)
@@ -416,33 +423,36 @@ func tambahTransaksi(arrayTransaksi *[NMAX]Transaksi, nTransaksi *int, arrayBara
 	var tempArrayBarang = *arrayBarang
 
 	for i := 0; i < transaksiTemp.NJumlahBarang; i++ {
-		indexBarang := IDtoIndexBarang(*arrayBarang, nBarang, transaksiTemp.IDBarang[i])
+		indexBarang := IDtoIndexBarang(*arrayBarang, nBarang, transaksiTemp.Item[i].IDBarang)
 		if indexBarang == -1 {
 			fmt.Println()
-			fmt.Println("ID Barang", transaksiTemp.IDBarang[i], "tidak ditemukan!")
+			fmt.Println("ID Barang", transaksiTemp.Item[i].IDBarang, "tidak ditemukan!")
 			return
 		}
 
-		if transaksiTemp.JumlahPerBarang[i] <= 0 {
+		if transaksiTemp.Item[i].JumlahBarang <= 0 {
 			fmt.Println()
 			fmt.Println("Jumlah per Barang", arrayBarang[indexBarang].Nama, "tidak valid!")
 			return
 		}
 
-		if transaksiTemp.JumlahPerBarang[i] > tempArrayBarang[indexBarang].Stok {
+		if transaksiTemp.Item[i].JumlahBarang > tempArrayBarang[indexBarang].Stok {
 			fmt.Println()
 			fmt.Println("Stok barang", arrayBarang[indexBarang].Nama, "tidak mencukupi!")
 			return
 		}
 
-		tempArrayBarang[indexBarang].Stok -= transaksiTemp.JumlahPerBarang[i]
+		transaksiTemp.Item[i].NamaBarang = arrayBarang[indexBarang].Nama
 
-		transaksiTemp.HargaPerJumlah[i] = arrayBarang[indexBarang].Harga * transaksiTemp.JumlahPerBarang[i]
-		TotalHarga += transaksiTemp.HargaPerJumlah[i]
+		tempArrayBarang[indexBarang].Stok -= transaksiTemp.Item[i].JumlahBarang
+
+		transaksiTemp.Item[i].HargaBarang = arrayBarang[indexBarang].Harga * transaksiTemp.Item[i].JumlahBarang
+
+		TotalHarga += transaksiTemp.Item[i].HargaBarang
 	}
 
 	for i := 0; i < transaksiTemp.NJumlahBarang; i++ {
-		indexBarang := IDtoIndexBarang(*arrayBarang, nBarang, transaksiTemp.IDBarang[i])
+		indexBarang := IDtoIndexBarang(*arrayBarang, nBarang, transaksiTemp.Item[i].IDBarang)
 		arrayBarang[indexBarang].Stok = tempArrayBarang[indexBarang].Stok
 	}
 
@@ -455,7 +465,7 @@ func tambahTransaksi(arrayTransaksi *[NMAX]Transaksi, nTransaksi *int, arrayBara
 	*nTransaksi++
 }
 
-func logTransaksi(arrayTransaksi [NMAX]Transaksi, nTransaksi int, arrayBarang [NMAX]Barang, nBarang int) {
+func logTransaksi(arrayTransaksi [NMAX]Transaksi, nTransaksi int) {
 	fmt.Println()
 	fmt.Println("Log Transaksi")
 	fmt.Println(">>>")
@@ -475,7 +485,7 @@ func logTransaksi(arrayTransaksi [NMAX]Transaksi, nTransaksi int, arrayBarang [N
 	}
 
 	if endAvailablePage == 0 || endAvailablePage == 1 {
-		subLogTransaksiPagination(arrayTransaksi, arrayBarang, nBarang, offset, limit)
+		subLogTransaksiPagination(arrayTransaksi, offset, limit)
 	} else {
 		for page != 0 {
 			offset = (page - 1) * limitPerPage
@@ -484,7 +494,7 @@ func logTransaksi(arrayTransaksi [NMAX]Transaksi, nTransaksi int, arrayBarang [N
 				limit = nTransaksi
 			}
 
-			subLogTransaksiPagination(arrayTransaksi, arrayBarang, nBarang, offset, limit)
+			subLogTransaksiPagination(arrayTransaksi, offset, limit)
 			fmt.Println("Halaman", page, "dari", endAvailablePage, "(Total:", nTransaksi, "transaksi)")
 			fmt.Println()
 			fmt.Println("1-" + strconv.Itoa(endAvailablePage) + ". Pilih Halaman")
@@ -502,15 +512,14 @@ func logTransaksi(arrayTransaksi [NMAX]Transaksi, nTransaksi int, arrayBarang [N
 	}
 }
 
-func subLogTransaksiPagination(arrayTransaksi [NMAX]Transaksi, arrayBarang [NMAX]Barang, nBarang int, offset int, limit int) {
+func subLogTransaksiPagination(arrayTransaksi [NMAX]Transaksi, offset int, limit int) {
 	fmt.Println()
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
 	t.AppendHeader(table.Row{"ID", "Time", "Nama Barang", "Jumlah", "Harga", "Total Harga"})
 	for i := offset; i < limit; i++ {
 		for j := 0; j < arrayTransaksi[i].NJumlahBarang; j++ {
-			indexBarang := IDtoIndexBarang(arrayBarang, nBarang, arrayTransaksi[i].IDBarang[j])
-			var rowData = table.Row{"", "", arrayBarang[indexBarang].Nama, arrayTransaksi[i].JumlahPerBarang[j], currency.IDR.Amount(arrayTransaksi[i].HargaPerJumlah[j]), ""}
+			var rowData = table.Row{"", "", arrayTransaksi[i].Item[j].NamaBarang, arrayTransaksi[i].Item[j].JumlahBarang, currency.IDR.Amount(arrayTransaksi[i].Item[j].HargaBarang), ""}
 			if j == 0 {
 				rowData[0] = arrayTransaksi[i].ID
 				rowData[1] = arrayTransaksi[i].Time
