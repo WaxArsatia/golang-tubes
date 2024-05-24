@@ -22,7 +22,7 @@ type Barang struct {
 }
 
 type SubTransaksi struct {
-	IDBarang     int
+	ID           int
 	NamaBarang   string
 	HargaBarang  int
 	JumlahBarang int
@@ -42,7 +42,7 @@ func main() {
 	var nTransaksi, nBarang, indexBarang int
 	var choice int
 
-	for choice != 5 {
+	for choice != 6 {
 		mainMenu()
 		_, err := fmt.Scan(&choice)
 		if err != nil {
@@ -54,10 +54,12 @@ func main() {
 			case 2:
 				tambahTransaksi(&arrayTransaksi, &nTransaksi, &arrayBarang, nBarang)
 			case 3:
-				logTransaksi(arrayTransaksi, nTransaksi)
+				ubahTransaksi(&arrayTransaksi, nTransaksi, &arrayBarang, nBarang)
 			case 4:
-				omzetTransaksi(arrayTransaksi, nTransaksi)
+				logTransaksi(arrayTransaksi, nTransaksi)
 			case 5:
+				omzetTransaksi(arrayTransaksi, nTransaksi)
+			case 6:
 				fmt.Println("Keluar dari aplikasi")
 			default:
 				fmt.Println("Pilihan tidak tersedia!")
@@ -73,11 +75,12 @@ func mainMenu() {
 	fmt.Println("==========================")
 	fmt.Println("1. Data Barang")
 	fmt.Println("2. Tambah Transaksi")
-	fmt.Println("3. Log Transaksi")
-	fmt.Println("4. Omzet Transaksi")
-	fmt.Println("5. Exit")
+	fmt.Println("3. Ubah Transaksi")
+	fmt.Println("4. Log Transaksi")
+	fmt.Println("5. Omzet Transaksi")
+	fmt.Println("6. Exit")
 	fmt.Println("==========================")
-	fmt.Print("Pilih Menu (1/2/3/4/5): ")
+	fmt.Print("Pilih Menu (1/2/3/4/5/6): ")
 }
 
 func dataBarangMenu() {
@@ -384,7 +387,7 @@ func tambahTransaksi(arrayTransaksi *[NMAX]Transaksi, nTransaksi *int, arrayBara
 
 	for i := 0; i < len(arrayIDBarang); i++ {
 		var err error
-		transaksiTemp.Item[i].IDBarang, err = strconv.Atoi(arrayIDBarang[i])
+		transaksiTemp.Item[i].ID, err = strconv.Atoi(arrayIDBarang[i])
 		if err != nil {
 			fmt.Println("Input ID Barang tidak valid!")
 			return
@@ -423,10 +426,10 @@ func tambahTransaksi(arrayTransaksi *[NMAX]Transaksi, nTransaksi *int, arrayBara
 	var tempArrayBarang = *arrayBarang
 
 	for i := 0; i < transaksiTemp.NJumlahBarang; i++ {
-		indexBarang := IDtoIndexBarang(*arrayBarang, nBarang, transaksiTemp.Item[i].IDBarang)
+		indexBarang := IDtoIndexBarang(*arrayBarang, nBarang, transaksiTemp.Item[i].ID)
 		if indexBarang == -1 {
 			fmt.Println()
-			fmt.Println("ID Barang", transaksiTemp.Item[i].IDBarang, "tidak ditemukan!")
+			fmt.Println("ID Barang", transaksiTemp.Item[i].ID, "tidak ditemukan!")
 			return
 		}
 
@@ -452,7 +455,7 @@ func tambahTransaksi(arrayTransaksi *[NMAX]Transaksi, nTransaksi *int, arrayBara
 	}
 
 	for i := 0; i < transaksiTemp.NJumlahBarang; i++ {
-		indexBarang := IDtoIndexBarang(*arrayBarang, nBarang, transaksiTemp.Item[i].IDBarang)
+		indexBarang := IDtoIndexBarang(*arrayBarang, nBarang, transaksiTemp.Item[i].ID)
 		arrayBarang[indexBarang].Stok = tempArrayBarang[indexBarang].Stok
 	}
 
@@ -463,6 +466,170 @@ func tambahTransaksi(arrayTransaksi *[NMAX]Transaksi, nTransaksi *int, arrayBara
 	arrayTransaksi[*nTransaksi] = transaksiTemp
 
 	*nTransaksi++
+}
+
+func ubahTransaksi(arrayTransaksi *[NMAX]Transaksi, nTransaksi int, arrayBarang *[NMAX]Barang, nBarang int) {
+	fmt.Println()
+	fmt.Println("Ubah Transaksi")
+	fmt.Println(">>>")
+
+	var IDTransaksi int
+	fmt.Print("Masukkan ID Transaksi: ")
+	_, err := fmt.Scan(&IDTransaksi)
+	if err != nil {
+		fmt.Println("Input ID Transaksi tidak valid!")
+		return
+	}
+
+	indexTransaksi := IDtoIndexTransaksi(*arrayTransaksi, nTransaksi, IDTransaksi)
+	if indexTransaksi == -1 {
+		fmt.Println("ID Transaksi tidak ditemukan!")
+		return
+	}
+
+	var choiceUbah int
+
+	for choiceUbah != 3 {
+
+		fmt.Println()
+		fmt.Println("1. Ubah Barang")
+		fmt.Println("2. Hapus Barang")
+		fmt.Println("3. Kembali")
+
+		fmt.Print("Pilih Menu (1/2/3): ")
+		_, err = fmt.Scan(&choiceUbah)
+		if err != nil {
+			fmt.Println("Input tidak valid!")
+		} else {
+
+			switch choiceUbah {
+			case 1:
+				subUbahJumlahBarangTransaksi(arrayTransaksi, indexTransaksi, arrayBarang, nBarang)
+
+			case 2:
+				subHapusBarangTransaksi(arrayTransaksi, indexTransaksi, arrayBarang, nBarang)
+
+			case 3:
+				fmt.Println("Kembali ke menu utama")
+
+			default:
+				fmt.Println("Pilihan tidak tersedia!")
+			}
+		}
+	}
+}
+
+func subUbahJumlahBarangTransaksi(arrayTransaksi *[NMAX]Transaksi, indexTransaksi int, arrayBarang *[NMAX]Barang, nBarang int) {
+	fmt.Println()
+	fmt.Println("Ubah Barang dari Transaksi")
+	fmt.Println(">>>")
+
+	var IDBarang, JumlahBarang int
+	fmt.Print("Masukkan ID Barang: ")
+	_, err := fmt.Scan(&IDBarang)
+	if err != nil {
+		fmt.Println("Input ID Barang tidak valid!")
+		return
+	}
+
+	indexBarang := IDtoIndexBarang(*arrayBarang, nBarang, IDBarang)
+	if indexBarang == -1 {
+		fmt.Println("ID Barang tidak ditemukan!")
+		return
+	}
+
+	var indexSubTransaksi int = -1
+	for i := 0; i < arrayTransaksi[indexTransaksi].NJumlahBarang; i++ {
+		if arrayTransaksi[indexTransaksi].Item[i].ID == IDBarang {
+			indexSubTransaksi = i
+		}
+	}
+
+	if indexSubTransaksi == -1 {
+		fmt.Println("ID Barang tidak ditemukan pada transaksi ini!")
+		return
+	}
+
+	var selectedItem = &arrayTransaksi[indexTransaksi].Item[indexSubTransaksi]
+
+	fmt.Print("Masukkan Jumlah Barang: ")
+	_, err = fmt.Scan(&JumlahBarang)
+	if err != nil {
+		fmt.Println("Input Jumlah Barang tidak valid!")
+		return
+	}
+
+	if JumlahBarang <= 0 {
+		fmt.Println("Jumlah Barang tidak valid!")
+		return
+	}
+
+	if JumlahBarang > (arrayBarang[indexBarang].Stok + selectedItem.JumlahBarang) {
+		fmt.Println("Stok barang tidak mencukupi!")
+		return
+	}
+
+	arrayBarang[indexBarang].Stok += selectedItem.JumlahBarang
+	arrayBarang[indexBarang].Stok -= JumlahBarang
+
+	selectedItem.JumlahBarang = JumlahBarang
+	selectedItem.HargaBarang = arrayBarang[indexBarang].Harga * JumlahBarang
+
+	arrayTransaksi[indexTransaksi].TotalHarga = 0
+	for i := 0; i < arrayTransaksi[indexTransaksi].NJumlahBarang; i++ {
+		arrayTransaksi[indexTransaksi].TotalHarga += arrayTransaksi[indexTransaksi].Item[i].HargaBarang
+	}
+
+	fmt.Println("Jumlah Barang berhasil diubah dari Transaksi !")
+}
+
+func subHapusBarangTransaksi(arrayTransaksi *[NMAX]Transaksi, indexTransaksi int, arrayBarang *[NMAX]Barang, nBarang int) {
+	fmt.Println()
+	fmt.Println("Hapus Barangd dari Transaksi")
+	fmt.Println(">>>")
+
+	var IDBarang int
+	fmt.Print("Masukkan ID Barang: ")
+	_, err := fmt.Scan(&IDBarang)
+	if err != nil {
+		fmt.Println("Input ID Barang tidak valid!")
+		return
+	}
+
+	indexBarang := IDtoIndexBarang(*arrayBarang, nBarang, IDBarang)
+	if indexBarang == -1 {
+		fmt.Println("ID Barang tidak ditemukan!")
+		return
+	}
+
+	var indexSubTransaksi int = -1
+	for i := 0; i < arrayTransaksi[indexTransaksi].NJumlahBarang; i++ {
+		if arrayTransaksi[indexTransaksi].Item[i].ID == IDBarang {
+			indexSubTransaksi = i
+		}
+	}
+
+	if indexSubTransaksi == -1 {
+		fmt.Println("ID Barang tidak ditemukan pada transaksi ini!")
+		return
+	}
+
+	var selectedItem = &arrayTransaksi[indexTransaksi].Item[indexSubTransaksi]
+
+	arrayBarang[indexBarang].Stok += selectedItem.JumlahBarang
+
+	for i := indexSubTransaksi; i < arrayTransaksi[indexTransaksi].NJumlahBarang-1; i++ {
+		arrayTransaksi[indexTransaksi].Item[i] = arrayTransaksi[indexTransaksi].Item[i+1]
+	}
+
+	arrayTransaksi[indexTransaksi].NJumlahBarang--
+
+	arrayTransaksi[indexTransaksi].TotalHarga = 0
+	for i := 0; i < arrayTransaksi[indexTransaksi].NJumlahBarang; i++ {
+		arrayTransaksi[indexTransaksi].TotalHarga += arrayTransaksi[indexTransaksi].Item[i].HargaBarang
+	}
+
+	fmt.Println("Barang berhasil dihapus dari Transaksi!")
 }
 
 func logTransaksi(arrayTransaksi [NMAX]Transaksi, nTransaksi int) {
@@ -557,6 +724,27 @@ func IDtoIndexBarang(arrayBarang [NMAX]Barang, nBarang int, ID int) int {
 		if arrayBarang[mid].ID == ID {
 			index = mid
 		} else if ID > arrayBarang[mid].ID {
+			left = mid + 1
+		} else {
+			right = mid - 1
+		}
+	}
+
+	return index
+}
+
+func IDtoIndexTransaksi(arrayTransaksi [NMAX]Transaksi, nTransaksi int, ID int) int {
+	// Use Binary Search Algorithm
+	var index int = -1
+	var left, mid, right int
+	left = 0
+	right = nTransaksi - 1
+
+	for left <= right && index == -1 {
+		mid = (left + right) / 2
+		if arrayTransaksi[mid].ID == ID {
+			index = mid
+		} else if ID > arrayTransaksi[mid].ID {
 			left = mid + 1
 		} else {
 			right = mid - 1
