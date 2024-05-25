@@ -36,13 +36,29 @@ type Transaksi struct {
 	TotalHarga    int
 }
 
+const (
+	SortBarangIDDesc int = iota
+	SortBarangNamaAsc
+	SortBarangNamaDesc
+	SortBarangHargaAsc
+	SortBarangHargaDesc
+	SortBarangStokAsc
+	SortBarangStokDesc
+)
+
+const (
+	SortTransaksiIDDesc int = iota
+	SortTransaksiTotalHargaAsc
+	SortTransaksiTotalHargaDesc
+)
+
 func main() {
 	var arrayTransaksi [NMAX]Transaksi
 	var arrayBarang [NMAX]Barang
 	var nTransaksi, nBarang, indexBarang int
-	var choice int
+	var choice int = -1
 
-	for choice != 6 {
+	for choice != 0 {
 		mainMenu()
 		_, err := fmt.Scan(&choice)
 		if err != nil {
@@ -50,6 +66,9 @@ func main() {
 			fmt.Println("Input tidak valid!")
 		} else {
 			switch choice {
+			case 0:
+				fmt.Println()
+				fmt.Println("Keluar dari aplikasi")
 			case 1:
 				dataBarang(&arrayBarang, &nBarang, &indexBarang)
 			case 2:
@@ -60,9 +79,6 @@ func main() {
 				logTransaksi(arrayTransaksi, nTransaksi)
 			case 5:
 				omzetTransaksi(arrayTransaksi, nTransaksi)
-			case 6:
-				fmt.Println()
-				fmt.Println("Keluar dari aplikasi")
 			default:
 				fmt.Println()
 				fmt.Println("Pilihan tidak tersedia!")
@@ -76,33 +92,33 @@ func mainMenu() {
 	fmt.Println("==========================")
 	fmt.Println("Aplikasi Kasir Minimarket")
 	fmt.Println("==========================")
+	fmt.Println("0. Exit")
 	fmt.Println("1. Data Barang")
 	fmt.Println("2. Tambah Transaksi")
 	fmt.Println("3. Ubah Transaksi")
 	fmt.Println("4. Log Transaksi")
 	fmt.Println("5. Omzet Transaksi")
-	fmt.Println("6. Exit")
 	fmt.Println("==========================")
-	fmt.Print("Pilih Menu (1/2/3/4/5/6): ")
+	fmt.Print("Pilih Menu (0/1/2/3/4/5): ")
 }
 
 func dataBarangMenu() {
 	fmt.Println()
 	fmt.Println("Data Barang")
 	fmt.Println(">>>")
+	fmt.Println("0. Kembali")
 	fmt.Println("1. Tambah Barang")
 	fmt.Println("2. Ubah Barang")
 	fmt.Println("3. Hapus Barang")
 	fmt.Println("4. List Barang")
 	fmt.Println("5. Tambah Stock Barang")
-	fmt.Println("6. Kembali")
-	fmt.Print("Pilih Menu (1/2/3/4/5/6): ")
+	fmt.Print("Pilih Menu (0/1/2/3/4/5): ")
 }
 
 func dataBarang(arrayBarang *[NMAX]Barang, nBarang *int, indexBarang *int) {
-	var choice int
+	var choice int = -1
 
-	for choice != 6 {
+	for choice != 0 {
 		dataBarangMenu()
 		_, err := fmt.Scan(&choice)
 		if err != nil {
@@ -110,6 +126,9 @@ func dataBarang(arrayBarang *[NMAX]Barang, nBarang *int, indexBarang *int) {
 			fmt.Println("Input tidak valid!")
 		} else {
 			switch choice {
+			case 0:
+				fmt.Println()
+				fmt.Println("Kembali ke menu utama")
 			case 1:
 				subTambahBarang(arrayBarang, nBarang, indexBarang)
 			case 2:
@@ -120,9 +139,6 @@ func dataBarang(arrayBarang *[NMAX]Barang, nBarang *int, indexBarang *int) {
 				subListBarang(*arrayBarang, *nBarang)
 			case 5:
 				subTambahStock(arrayBarang, *nBarang)
-			case 6:
-				fmt.Println()
-				fmt.Println("Kembali ke menu utama")
 			default:
 				fmt.Println()
 				fmt.Println("Pilihan tidak tersedia!")
@@ -206,16 +222,16 @@ func subUbahBarang(arrayBarang *[NMAX]Barang, nBarang int) {
 
 	subListBarangPagination(*arrayBarang, indexBarang, indexBarang+1)
 
-	var choiceUbah int
+	var choiceUbah int = -1
 
-	for choiceUbah != 3 {
+	for choiceUbah != 0 {
 
 		fmt.Println()
+		fmt.Println("0. Kembali")
 		fmt.Println("1. Ubah Nama Barang")
 		fmt.Println("2. Ubah Harga Barang")
-		fmt.Println("3. Kembali")
 
-		fmt.Print("Pilih Menu (1/2/3): ")
+		fmt.Print("Pilih Menu (0/1/2): ")
 		_, err = fmt.Scan(&choiceUbah)
 		if err != nil {
 			fmt.Println()
@@ -223,15 +239,15 @@ func subUbahBarang(arrayBarang *[NMAX]Barang, nBarang int) {
 		} else {
 
 			switch choiceUbah {
+			case 0:
+				fmt.Println()
+				fmt.Println("Kembali ke menu Data Barang")
+
 			case 1:
 				subUbahNamaBarang(arrayBarang, indexBarang)
 
 			case 2:
 				subUbahHargaBarang(arrayBarang, indexBarang)
-
-			case 3:
-				fmt.Println()
-				fmt.Println("Kembali ke menu Data Barang")
 
 			default:
 				fmt.Println()
@@ -273,6 +289,12 @@ func subUbahHargaBarang(arrayBarang *[NMAX]Barang, indexBarang int) {
 		return
 	}
 
+	if tempHarga < 0 {
+		fmt.Println()
+		fmt.Println("Harga Barang tidak boleh kurang dari 0!")
+		return
+	}
+
 	arrayBarang[indexBarang].Harga = tempHarga
 
 	fmt.Println()
@@ -307,12 +329,42 @@ func subHapusBarang(arrayBarang *[NMAX]Barang, nBarang *int) {
 	fmt.Println("Barang berhasil dihapus!")
 }
 
-// TODO: Implement Sorting
+func subListBarangMenu(endAvailablePage int, page int, nBarang int) {
+	if endAvailablePage > 1 {
+		fmt.Println("Halaman", page, "dari", endAvailablePage, "(Total:", nBarang, "barang)")
+	}
+
+	fmt.Println()
+	fmt.Println("0. Kembali")
+
+	if endAvailablePage > 1 {
+		fmt.Println("1-" + strconv.Itoa(endAvailablePage) + ". Pilih Halaman")
+	}
+
+	fmt.Println("q. Sort by ID Asc (Default)")
+	fmt.Println("w. Sort by ID Desc")
+	fmt.Println("e. Sort by Nama Asc")
+	fmt.Println("r. Sort by Nama Desc")
+	fmt.Println("t. Sort by Harga Asc")
+	fmt.Println("y. Sort by Harga Desc")
+	fmt.Println("u. Sort by Stok Asc")
+	fmt.Println("i. Sort by Stok Desc")
+
+	if endAvailablePage > 1 {
+		fmt.Print("Pilih Menu (0/1-" + strconv.Itoa(endAvailablePage) + "/q/w/e/r/t/y/u/i): ")
+	} else {
+		fmt.Print("Pilih Menu (0/q/w/e/r/t/y/u/i): ")
+	}
+}
+
 func subListBarang(arrayBarang [NMAX]Barang, nBarang int) {
 	fmt.Println()
 	fmt.Println("List Barang")
 	fmt.Println(">>>")
 
+	var tempArrayBarang = arrayBarang
+
+	var choice string
 	var offset, limit, page int
 	const limitPerPage = 5
 	page = 1
@@ -327,29 +379,61 @@ func subListBarang(arrayBarang [NMAX]Barang, nBarang int) {
 		limit = nBarang
 	}
 
-	if endAvailablePage == 0 || endAvailablePage == 1 {
-		subListBarangPagination(arrayBarang, offset, limit)
+	if nBarang <= 1 {
+		subListBarangPagination(tempArrayBarang, offset, limit)
 	} else {
-		for page != 0 {
+		for choice != "0" {
 			offset = (page - 1) * limitPerPage
 			limit = offset + limitPerPage
 			if limit > nBarang {
 				limit = nBarang
 			}
 
-			subListBarangPagination(arrayBarang, offset, limit)
-			fmt.Println("Halaman", page, "dari", endAvailablePage, "(Total:", nBarang, "barang)")
-			fmt.Println()
-			fmt.Println("1-" + strconv.Itoa(endAvailablePage) + ". Pilih Halaman")
-			fmt.Println("0. Kembali")
-			fmt.Print("Pilih Menu (1-" + strconv.Itoa(endAvailablePage) + "/0): ")
+			subListBarangPagination(tempArrayBarang, offset, limit)
 
-			fmt.Scan(&page)
+			subListBarangMenu(endAvailablePage, page, nBarang)
 
-			for page < 0 || page > endAvailablePage {
-				fmt.Println("Halaman tidak tersedia!")
-				fmt.Print("Pilih Menu (1-" + strconv.Itoa(endAvailablePage) + "/0): ")
-				fmt.Scan(&page)
+			fmt.Scan(&choice)
+
+			switch choice {
+			case "0":
+				fmt.Println()
+				fmt.Println("Kembali ke menu Data Barang")
+			case "q":
+				tempArrayBarang = arrayBarang
+			case "w":
+				sortBarang(&tempArrayBarang, nBarang, SortBarangIDDesc)
+			case "e":
+				sortBarang(&tempArrayBarang, nBarang, SortBarangNamaAsc)
+			case "r":
+				sortBarang(&tempArrayBarang, nBarang, SortBarangNamaDesc)
+			case "t":
+				sortBarang(&tempArrayBarang, nBarang, SortBarangHargaAsc)
+			case "y":
+				sortBarang(&tempArrayBarang, nBarang, SortBarangHargaDesc)
+			case "u":
+				sortBarang(&tempArrayBarang, nBarang, SortBarangStokAsc)
+			case "i":
+				sortBarang(&tempArrayBarang, nBarang, SortBarangStokDesc)
+			default:
+				if endAvailablePage > 1 {
+					var intChoice int
+					intChoice, err := strconv.Atoi(choice)
+					if err != nil {
+						fmt.Println()
+						fmt.Println("Pilihan tidak valid!")
+					} else {
+						if intChoice >= 1 && intChoice <= endAvailablePage {
+							page = intChoice
+						} else {
+							fmt.Println()
+							fmt.Println("Halaman tidak tersedia!")
+						}
+					}
+				} else {
+					fmt.Println()
+					fmt.Println("Pilihan tidak tersedia!")
+				}
 			}
 		}
 	}
@@ -540,16 +624,16 @@ func ubahTransaksi(arrayTransaksi *[NMAX]Transaksi, nTransaksi int, arrayBarang 
 
 	subLogTransaksiPagination(*arrayTransaksi, indexTransaksi, indexTransaksi+1)
 
-	var choiceUbah int
+	var choiceUbah int = -1
 
-	for choiceUbah != 3 {
+	for choiceUbah != 0 {
 
 		fmt.Println()
+		fmt.Println("0. Kembali")
 		fmt.Println("1. Ubah Barang dari Transaksi")
 		fmt.Println("2. Hapus Barang dari Transaksi")
-		fmt.Println("3. Kembali")
 
-		fmt.Print("Pilih Menu (1/2/3): ")
+		fmt.Print("Pilih Menu (0/1/2): ")
 		_, err = fmt.Scan(&choiceUbah)
 		if err != nil {
 			fmt.Println()
@@ -557,15 +641,15 @@ func ubahTransaksi(arrayTransaksi *[NMAX]Transaksi, nTransaksi int, arrayBarang 
 		} else {
 
 			switch choiceUbah {
+			case 0:
+				fmt.Println()
+				fmt.Println("Kembali ke menu utama")
+
 			case 1:
 				subUbahJumlahBarangTransaksi(arrayTransaksi, indexTransaksi, arrayBarang, nBarang)
 
 			case 2:
 				subHapusBarangTransaksi(arrayTransaksi, indexTransaksi, arrayBarang, nBarang)
-
-			case 3:
-				fmt.Println()
-				fmt.Println("Kembali ke menu utama")
 
 			default:
 				fmt.Println()
@@ -651,9 +735,15 @@ func subUbahJumlahBarangTransaksi(arrayTransaksi *[NMAX]Transaksi, indexTransaks
 
 func subHapusBarangTransaksi(arrayTransaksi *[NMAX]Transaksi, indexTransaksi int, arrayBarang *[NMAX]Barang, nBarang int) {
 	fmt.Println()
-	fmt.Println("Hapus Barangd dari Transaksi")
+	fmt.Println("Hapus Barang dari Transaksi")
 	fmt.Println(">>>")
 	fmt.Println()
+
+	if arrayTransaksi[indexTransaksi].NJumlahBarang == 1 {
+		fmt.Println()
+		fmt.Println("Transaksi hanya memiliki 1 barang. Tidak bisa dihapus!")
+		return
+	}
 
 	var IDBarang int
 	fmt.Print("Masukkan ID Barang: ")
@@ -701,14 +791,42 @@ func subHapusBarangTransaksi(arrayTransaksi *[NMAX]Transaksi, indexTransaksi int
 
 	fmt.Println()
 	fmt.Println("Barang berhasil dihapus dari Transaksi!")
+
+	subLogTransaksiPagination(*arrayTransaksi, indexTransaksi, indexTransaksi+1)
 }
 
-// TODO: Implement Sorting
+func logTransaksiMenu(endAvailablePage int, page int, nTransaksi int) {
+	if endAvailablePage > 1 {
+		fmt.Println("Halaman", page, "dari", endAvailablePage, "(Total:", nTransaksi, "transaksi)")
+	}
+
+	fmt.Println()
+	fmt.Println("0. Kembali")
+
+	if endAvailablePage > 1 {
+		fmt.Println("1-" + strconv.Itoa(endAvailablePage) + ". Pilih Halaman")
+	}
+
+	fmt.Println("q. Sort by ID Asc (Default)")
+	fmt.Println("w. Sort by ID Desc")
+	fmt.Println("e. Sort by Total Harga Asc")
+	fmt.Println("r. Sort by Total Harga Desc")
+
+	if endAvailablePage > 1 {
+		fmt.Print("Pilih Menu (0/1-" + strconv.Itoa(endAvailablePage) + "/q/w/e/r): ")
+	} else {
+		fmt.Print("Pilih Menu (0/q/w/e/r): ")
+	}
+}
+
 func logTransaksi(arrayTransaksi [NMAX]Transaksi, nTransaksi int) {
 	fmt.Println()
 	fmt.Println("Log Transaksi")
 	fmt.Println(">>>")
 
+	var tempArrayTransaksi = arrayTransaksi
+
+	var choice string
 	var offset, limit, page int
 	const limitPerPage = 5
 	page = 1
@@ -723,29 +841,53 @@ func logTransaksi(arrayTransaksi [NMAX]Transaksi, nTransaksi int) {
 		limit = nTransaksi
 	}
 
-	if endAvailablePage == 0 || endAvailablePage == 1 {
-		subLogTransaksiPagination(arrayTransaksi, offset, limit)
+	if nTransaksi <= 1 {
+		subLogTransaksiPagination(tempArrayTransaksi, offset, limit)
 	} else {
-		for page != 0 {
+		for choice != "0" {
 			offset = (page - 1) * limitPerPage
 			limit = offset + limitPerPage
 			if limit > nTransaksi {
 				limit = nTransaksi
 			}
 
-			subLogTransaksiPagination(arrayTransaksi, offset, limit)
-			fmt.Println("Halaman", page, "dari", endAvailablePage, "(Total:", nTransaksi, "transaksi)")
-			fmt.Println()
-			fmt.Println("1-" + strconv.Itoa(endAvailablePage) + ". Pilih Halaman")
-			fmt.Println("0. Kembali")
-			fmt.Print("Pilih Menu (1-" + strconv.Itoa(endAvailablePage) + "/0): ")
+			subLogTransaksiPagination(tempArrayTransaksi, offset, limit)
 
-			fmt.Scan(&page)
+			logTransaksiMenu(endAvailablePage, page, nTransaksi)
 
-			for page < 0 || page > endAvailablePage {
-				fmt.Println("Halaman tidak tersedia!")
-				fmt.Print("Pilih Menu (1-" + strconv.Itoa(endAvailablePage) + "/0): ")
-				fmt.Scan(&page)
+			fmt.Scan(&choice)
+
+			switch choice {
+			case "0":
+				fmt.Println()
+				fmt.Println("Kembali ke menu utama")
+			case "q":
+				tempArrayTransaksi = arrayTransaksi
+			case "w":
+				sortTransaksi(&tempArrayTransaksi, nTransaksi, SortTransaksiIDDesc)
+			case "e":
+				sortTransaksi(&tempArrayTransaksi, nTransaksi, SortTransaksiTotalHargaAsc)
+			case "r":
+				sortTransaksi(&tempArrayTransaksi, nTransaksi, SortTransaksiTotalHargaDesc)
+			default:
+				if endAvailablePage > 1 {
+					var intChoice int
+					intChoice, err := strconv.Atoi(choice)
+					if err != nil {
+						fmt.Println()
+						fmt.Println("Pilihan tidak valid!")
+					} else {
+						if intChoice >= 1 && intChoice <= endAvailablePage {
+							page = intChoice
+						} else {
+							fmt.Println()
+							fmt.Println("Halaman tidak tersedia!")
+						}
+					}
+				} else {
+					fmt.Println()
+					fmt.Println("Pilihan tidak tersedia!")
+				}
 			}
 		}
 	}
@@ -755,14 +897,14 @@ func subLogTransaksiPagination(arrayTransaksi [NMAX]Transaksi, offset int, limit
 	fmt.Println()
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
-	t.AppendHeader(table.Row{"ID", "Time", "Nama Barang", "Jumlah", "Harga", "Total Harga"})
+	t.AppendHeader(table.Row{"ID", "Time", "ID Barang", "Nama Barang", "Jumlah", "Harga", "Total Harga"})
 	for i := offset; i < limit; i++ {
 		for j := 0; j < arrayTransaksi[i].NJumlahBarang; j++ {
-			var rowData = table.Row{"", "", arrayTransaksi[i].Item[j].NamaBarang, arrayTransaksi[i].Item[j].JumlahBarang, currency.IDR.Amount(arrayTransaksi[i].Item[j].HargaBarang), ""}
+			var rowData = table.Row{"", "", arrayTransaksi[i].Item[j].ID, arrayTransaksi[i].Item[j].NamaBarang, arrayTransaksi[i].Item[j].JumlahBarang, currency.IDR.Amount(arrayTransaksi[i].Item[j].HargaBarang), ""}
 			if j == 0 {
 				rowData[0] = arrayTransaksi[i].ID
 				rowData[1] = arrayTransaksi[i].Time
-				rowData[5] = currency.IDR.Amount(arrayTransaksi[i].TotalHarga)
+				rowData[6] = currency.IDR.Amount(arrayTransaksi[i].TotalHarga)
 			}
 			t.AppendRow(rowData)
 		}
@@ -786,22 +928,13 @@ func omzetTransaksi(arrayTransaksi [NMAX]Transaksi, nTransaksi int) {
 }
 
 func IDtoIndexBarang(arrayBarang [NMAX]Barang, nBarang int, ID int) int {
+	// Use Sequential Search Algorithm
 	var index int = -1
-	var left, mid, right int
-	left = 0
-	right = nBarang - 1
-
-	for left <= right && index == -1 {
-		mid = (left + right) / 2
-		if arrayBarang[mid].ID == ID {
-			index = mid
-		} else if ID > arrayBarang[mid].ID {
-			left = mid + 1
-		} else {
-			right = mid - 1
+	for i := 0; i < nBarang && index == -1; i++ {
+		if arrayBarang[i].ID == ID {
+			index = i
 		}
 	}
-
 	return index
 }
 
@@ -824,4 +957,74 @@ func IDtoIndexTransaksi(arrayTransaksi [NMAX]Transaksi, nTransaksi int, ID int) 
 	}
 
 	return index
+}
+
+func sortBarang(arrayBarang *[NMAX]Barang, nBarang int, sortType int) {
+	// Use Selection Sort Algorithm
+	for i := 0; i < nBarang-1; i++ {
+		sortIndex := i
+		for j := i + 1; j < nBarang; j++ {
+			switch sortType {
+			case SortBarangIDDesc:
+				if arrayBarang[j].ID > arrayBarang[sortIndex].ID {
+					sortIndex = j
+				}
+			case SortBarangNamaAsc:
+				if arrayBarang[j].Nama < arrayBarang[sortIndex].Nama {
+					sortIndex = j
+				}
+			case SortBarangNamaDesc:
+				if arrayBarang[j].Nama > arrayBarang[sortIndex].Nama {
+					sortIndex = j
+				}
+			case SortBarangHargaAsc:
+				if arrayBarang[j].Harga < arrayBarang[sortIndex].Harga {
+					sortIndex = j
+				}
+			case SortBarangHargaDesc:
+				if arrayBarang[j].Harga > arrayBarang[sortIndex].Harga {
+					sortIndex = j
+				}
+			case SortBarangStokAsc:
+				if arrayBarang[j].Stok < arrayBarang[sortIndex].Stok {
+					sortIndex = j
+				}
+			case SortBarangStokDesc:
+				if arrayBarang[j].Stok > arrayBarang[sortIndex].Stok {
+					sortIndex = j
+				}
+			}
+		}
+		if sortIndex != i {
+			temp := arrayBarang[i]
+			arrayBarang[i] = arrayBarang[sortIndex]
+			arrayBarang[sortIndex] = temp
+		}
+	}
+}
+
+func sortTransaksi(arrayTransaksi *[NMAX]Transaksi, nTransaksi int, sortType int) {
+	// Use Insertion Sort Algorithm
+	for i := 1; i < nTransaksi; i++ {
+		temp := arrayTransaksi[i]
+		j := i - 1
+		switch sortType {
+		case SortTransaksiIDDesc:
+			for j >= 0 && arrayTransaksi[j].ID < temp.ID {
+				arrayTransaksi[j+1] = arrayTransaksi[j]
+				j--
+			}
+		case SortTransaksiTotalHargaAsc:
+			for j >= 0 && arrayTransaksi[j].TotalHarga > temp.TotalHarga {
+				arrayTransaksi[j+1] = arrayTransaksi[j]
+				j--
+			}
+		case SortTransaksiTotalHargaDesc:
+			for j >= 0 && arrayTransaksi[j].TotalHarga < temp.TotalHarga {
+				arrayTransaksi[j+1] = arrayTransaksi[j]
+				j--
+			}
+		}
+		arrayTransaksi[j+1] = temp
+	}
 }
