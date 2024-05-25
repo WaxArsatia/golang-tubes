@@ -275,6 +275,7 @@ func subHapusBarang(arrayBarang *[NMAX]Barang, nBarang *int) {
 	fmt.Println("Barang berhasil dihapus!")
 }
 
+// TODO: Implement Sorting
 func subListBarang(arrayBarang [NMAX]Barang, nBarang int) {
 	fmt.Println()
 	fmt.Println("List Barang")
@@ -632,6 +633,7 @@ func subHapusBarangTransaksi(arrayTransaksi *[NMAX]Transaksi, indexTransaksi int
 	fmt.Println("Barang berhasil dihapus dari Transaksi!")
 }
 
+// TODO: Implement Sorting
 func logTransaksi(arrayTransaksi [NMAX]Transaksi, nTransaksi int) {
 	fmt.Println()
 	fmt.Println("Log Transaksi")
