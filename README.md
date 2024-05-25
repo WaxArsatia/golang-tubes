@@ -30,7 +30,6 @@
 > - [🚀 Getting Started](#-getting-started)
 >   - [⚙️ Installation](#️-installation)
 >   - [🤖 Running ](#-running-)
->   - [🧪 Tests](#-tests)
 > - [🛠 Project Roadmap](#-project-roadmap)
 > - [🤝 Contributing](#-contributing)
 > - [📄 License](#-license)
@@ -109,14 +108,6 @@ Use the following command to run :
 
 ```sh
 ./myapp
-```
-
-### 🧪 Tests (TODO)
-
-To execute tests, run:
-
-```sh
-go test
 ```
 
 ---
