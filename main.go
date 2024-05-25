@@ -493,8 +493,8 @@ func ubahTransaksi(arrayTransaksi *[NMAX]Transaksi, nTransaksi int, arrayBarang 
 	for choiceUbah != 3 {
 
 		fmt.Println()
-		fmt.Println("1. Ubah Barang")
-		fmt.Println("2. Hapus Barang")
+		fmt.Println("1. Ubah Barang dari Transaksi")
+		fmt.Println("2. Hapus Barang dari Transaksi")
 		fmt.Println("3. Kembali")
 
 		fmt.Print("Pilih Menu (1/2/3): ")
