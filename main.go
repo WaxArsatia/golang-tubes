@@ -46,6 +46,7 @@ func main() {
 		mainMenu()
 		_, err := fmt.Scan(&choice)
 		if err != nil {
+			fmt.Println()
 			fmt.Println("Input tidak valid!")
 		} else {
 			switch choice {
@@ -60,8 +61,10 @@ func main() {
 			case 5:
 				omzetTransaksi(arrayTransaksi, nTransaksi)
 			case 6:
+				fmt.Println()
 				fmt.Println("Keluar dari aplikasi")
 			default:
+				fmt.Println()
 				fmt.Println("Pilihan tidak tersedia!")
 			}
 		}
@@ -103,6 +106,7 @@ func dataBarang(arrayBarang *[NMAX]Barang, nBarang *int, indexBarang *int) {
 		dataBarangMenu()
 		_, err := fmt.Scan(&choice)
 		if err != nil {
+			fmt.Println()
 			fmt.Println("Input tidak valid!")
 		} else {
 			switch choice {
@@ -117,8 +121,10 @@ func dataBarang(arrayBarang *[NMAX]Barang, nBarang *int, indexBarang *int) {
 			case 5:
 				subTambahStock(arrayBarang, *nBarang)
 			case 6:
+				fmt.Println()
 				fmt.Println("Kembali ke menu utama")
 			default:
+				fmt.Println()
 				fmt.Println("Pilihan tidak tersedia!")
 			}
 		}
@@ -132,6 +138,7 @@ func subTambahBarang(arrayBarang *[NMAX]Barang, nBarang *int, indexBarang *int) 
 	fmt.Println()
 	fmt.Println("Tambah Barang")
 	fmt.Println(">>>")
+	fmt.Println()
 
 	fmt.Print("Masukkan Nama Barang: ")
 	scanner := bufio.NewScanner(os.Stdin)
@@ -149,6 +156,7 @@ func subTambahBarang(arrayBarang *[NMAX]Barang, nBarang *int, indexBarang *int) 
 
 	_, err := fmt.Scan(&barangTemp.Harga)
 	if err != nil {
+		fmt.Println()
 		fmt.Println("Input Harga Barang tidak valid!")
 		return
 	}
@@ -157,37 +165,46 @@ func subTambahBarang(arrayBarang *[NMAX]Barang, nBarang *int, indexBarang *int) 
 
 	_, err = fmt.Scan(&barangTemp.Stok)
 	if err != nil {
+		fmt.Println()
 		fmt.Println("Input Stok Barang tidak valid!")
 		return
 	}
 
+	fmt.Println()
 	fmt.Println("Berhasil menambahkan barang!")
 
 	arrayBarang[*nBarang] = barangTemp
 
 	*nBarang++
 	*indexBarang++
+
+	subListBarangPagination(*arrayBarang, *nBarang-1, *nBarang)
 }
 
 func subUbahBarang(arrayBarang *[NMAX]Barang, nBarang int) {
 	fmt.Println()
 	fmt.Println("Ubah Barang")
 	fmt.Println(">>>")
+	fmt.Println()
 
 	var IDBarang int
 	fmt.Print("Masukkan ID Barang: ")
 
 	_, err := fmt.Scan(&IDBarang)
 	if err != nil {
+		fmt.Println()
 		fmt.Println("Input ID Barang tidak valid!")
 		return
 	}
 
 	indexBarang := IDtoIndexBarang(*arrayBarang, nBarang, IDBarang)
 	if indexBarang == -1 {
+		fmt.Println()
 		fmt.Println("ID Barang tidak ditemukan!")
 		return
 	}
+
+	subListBarangPagination(*arrayBarang, indexBarang, indexBarang+1)
 
 	var choiceUbah int
 
@@ -201,6 +218,7 @@ func subUbahBarang(arrayBarang *[NMAX]Barang, nBarang int) {
 		fmt.Print("Pilih Menu (1/2/3): ")
 		_, err = fmt.Scan(&choiceUbah)
 		if err != nil {
+			fmt.Println()
 			fmt.Println("Input tidak valid!")
 		} else {
 
@@ -212,9 +230,11 @@ func subUbahBarang(arrayBarang *[NMAX]Barang, nBarang int) {
 				subUbahHargaBarang(arrayBarang, indexBarang)
 
 			case 3:
+				fmt.Println()
 				fmt.Println("Kembali ke menu Data Barang")
 
 			default:
+				fmt.Println()
 				fmt.Println("Pilihan tidak tersedia!")
 			}
 		}
@@ -234,28 +254,38 @@ func subUbahNamaBarang(arrayBarang *[NMAX]Barang, indexBarang int) {
 	}
 
 	arrayBarang[indexBarang].Nama = inNama
+	fmt.Println()
 	fmt.Println("Nama barang berhasil diubah!")
+
+	subListBarangPagination(*arrayBarang, indexBarang, indexBarang+1)
 }
 
 func subUbahHargaBarang(arrayBarang *[NMAX]Barang, indexBarang int) {
 	fmt.Println()
 	fmt.Print("Masukkan Harga Barang: ")
+
 	var tempHarga int
+
 	_, err := fmt.Scan(&tempHarga)
 	if err != nil {
+		fmt.Println()
 		fmt.Println("Input Harga Barang tidak valid!")
 		return
 	}
 
 	arrayBarang[indexBarang].Harga = tempHarga
 
+	fmt.Println()
 	fmt.Println("Harga barang berhasil diubah!")
+
+	subListBarangPagination(*arrayBarang, indexBarang, indexBarang+1)
 }
 
 func subHapusBarang(arrayBarang *[NMAX]Barang, nBarang *int) {
 	fmt.Println()
 	fmt.Println("Hapus Barang")
 	fmt.Println(">>>")
+	fmt.Println()
 
 	var IDBarang int
 	fmt.Print("Masukkan ID Barang: ")
@@ -263,6 +293,7 @@ func subHapusBarang(arrayBarang *[NMAX]Barang, nBarang *int) {
 
 	indexBarang := IDtoIndexBarang(*arrayBarang, *nBarang, IDBarang)
 	if indexBarang == -1 {
+		fmt.Println()
 		fmt.Println("ID Barang tidak ditemukan!")
 		return
 	}
@@ -272,6 +303,7 @@ func subHapusBarang(arrayBarang *[NMAX]Barang, nBarang *int) {
 	}
 	*nBarang--
 
+	fmt.Println()
 	fmt.Println("Barang berhasil dihapus!")
 }
 
@@ -338,17 +370,20 @@ func subTambahStock(arrayBarang *[NMAX]Barang, nBarang int) {
 	fmt.Println()
 	fmt.Println("Tambah Stock Barang")
 	fmt.Println(">>>")
+	fmt.Println()
 
 	var IDBarang, JumlahBarang int
 	fmt.Print("Masukkan ID Barang: ")
 	_, err := fmt.Scan(&IDBarang)
 	if err != nil {
+		fmt.Println()
 		fmt.Println("Input ID Barang tidak valid!")
 		return
 	}
 
 	indexBarang := IDtoIndexBarang(*arrayBarang, nBarang, IDBarang)
 	if indexBarang == -1 {
+		fmt.Println()
 		fmt.Println("ID Barang tidak ditemukan!")
 		return
 	}
@@ -356,13 +391,17 @@ func subTambahStock(arrayBarang *[NMAX]Barang, nBarang int) {
 	fmt.Print("Masukkan Jumlah Barang: ")
 	_, err = fmt.Scan(&JumlahBarang)
 	if err != nil {
+		fmt.Println()
 		fmt.Println("Input Jumlah Barang tidak valid!")
 		return
 	}
 
 	arrayBarang[indexBarang].Stok += JumlahBarang
 
+	fmt.Println()
 	fmt.Println("Stok barang berhasil ditambahkan!")
+
+	subListBarangPagination(*arrayBarang, indexBarang, indexBarang+1)
 }
 
 func tambahTransaksi(arrayTransaksi *[NMAX]Transaksi, nTransaksi *int, arrayBarang *[NMAX]Barang, nBarang int) {
@@ -373,6 +412,7 @@ func tambahTransaksi(arrayTransaksi *[NMAX]Transaksi, nTransaksi *int, arrayBara
 	fmt.Println()
 	fmt.Println("Tambah Transaksi")
 	fmt.Println(">>>")
+	fmt.Println()
 
 	fmt.Print("Masukkan ID Barang (jika banyak pisahkan dengan spasi): ")
 	scanner := bufio.NewScanner(os.Stdin)
@@ -390,6 +430,7 @@ func tambahTransaksi(arrayTransaksi *[NMAX]Transaksi, nTransaksi *int, arrayBara
 		var err error
 		transaksiTemp.Item[i].ID, err = strconv.Atoi(arrayIDBarang[i])
 		if err != nil {
+			fmt.Println()
 			fmt.Println("Input ID Barang tidak valid!")
 			return
 		}
@@ -409,7 +450,7 @@ func tambahTransaksi(arrayTransaksi *[NMAX]Transaksi, nTransaksi *int, arrayBara
 
 	if len(arrayIDBarang) != len(arrayJumlahPerBarang) {
 		fmt.Println()
-		fmt.Println("Input tidak valid. Jumlah ID Barang dan Jumlah per Barang tidak sama!")
+		fmt.Println("Input tidak valid. Banyak ID Barang dan Banyak Jumlah per Barang tidak sama!")
 		return
 	}
 
@@ -417,6 +458,7 @@ func tambahTransaksi(arrayTransaksi *[NMAX]Transaksi, nTransaksi *int, arrayBara
 		var err error
 		transaksiTemp.Item[i].JumlahBarang, err = strconv.Atoi(arrayJumlahPerBarang[i])
 		if err != nil {
+			fmt.Println()
 			fmt.Println("Input Jumlah per Barang tidak valid!")
 			return
 		}
@@ -467,26 +509,36 @@ func tambahTransaksi(arrayTransaksi *[NMAX]Transaksi, nTransaksi *int, arrayBara
 	arrayTransaksi[*nTransaksi] = transaksiTemp
 
 	*nTransaksi++
+
+	fmt.Println()
+	fmt.Println("Transaksi berhasil ditambahkan!")
+
+	subLogTransaksiPagination(*arrayTransaksi, *nTransaksi-1, *nTransaksi)
 }
 
 func ubahTransaksi(arrayTransaksi *[NMAX]Transaksi, nTransaksi int, arrayBarang *[NMAX]Barang, nBarang int) {
 	fmt.Println()
 	fmt.Println("Ubah Transaksi")
 	fmt.Println(">>>")
+	fmt.Println()
 
 	var IDTransaksi int
 	fmt.Print("Masukkan ID Transaksi: ")
 	_, err := fmt.Scan(&IDTransaksi)
 	if err != nil {
+		fmt.Println()
 		fmt.Println("Input ID Transaksi tidak valid!")
 		return
 	}
 
 	indexTransaksi := IDtoIndexTransaksi(*arrayTransaksi, nTransaksi, IDTransaksi)
 	if indexTransaksi == -1 {
+		fmt.Println()
 		fmt.Println("ID Transaksi tidak ditemukan!")
 		return
 	}
+
+	subLogTransaksiPagination(*arrayTransaksi, indexTransaksi, indexTransaksi+1)
 
 	var choiceUbah int
 
@@ -500,6 +552,7 @@ func ubahTransaksi(arrayTransaksi *[NMAX]Transaksi, nTransaksi int, arrayBarang 
 		fmt.Print("Pilih Menu (1/2/3): ")
 		_, err = fmt.Scan(&choiceUbah)
 		if err != nil {
+			fmt.Println()
 			fmt.Println("Input tidak valid!")
 		} else {
 
@@ -511,9 +564,11 @@ func ubahTransaksi(arrayTransaksi *[NMAX]Transaksi, nTransaksi int, arrayBarang 
 				subHapusBarangTransaksi(arrayTransaksi, indexTransaksi, arrayBarang, nBarang)
 
 			case 3:
+				fmt.Println()
 				fmt.Println("Kembali ke menu utama")
 
 			default:
+				fmt.Println()
 				fmt.Println("Pilihan tidak tersedia!")
 			}
 		}
@@ -524,17 +579,20 @@ func subUbahJumlahBarangTransaksi(arrayTransaksi *[NMAX]Transaksi, indexTransaks
 	fmt.Println()
 	fmt.Println("Ubah Barang dari Transaksi")
 	fmt.Println(">>>")
+	fmt.Println()
 
 	var IDBarang, JumlahBarang int
 	fmt.Print("Masukkan ID Barang: ")
 	_, err := fmt.Scan(&IDBarang)
 	if err != nil {
+		fmt.Println()
 		fmt.Println("Input ID Barang tidak valid!")
 		return
 	}
 
 	indexBarang := IDtoIndexBarang(*arrayBarang, nBarang, IDBarang)
 	if indexBarang == -1 {
+		fmt.Println()
 		fmt.Println("ID Barang tidak ditemukan!")
 		return
 	}
@@ -547,6 +605,7 @@ func subUbahJumlahBarangTransaksi(arrayTransaksi *[NMAX]Transaksi, indexTransaks
 	}
 
 	if indexSubTransaksi == -1 {
+		fmt.Println()
 		fmt.Println("ID Barang tidak ditemukan pada transaksi ini!")
 		return
 	}
@@ -556,16 +615,19 @@ func subUbahJumlahBarangTransaksi(arrayTransaksi *[NMAX]Transaksi, indexTransaks
 	fmt.Print("Masukkan Jumlah Barang: ")
 	_, err = fmt.Scan(&JumlahBarang)
 	if err != nil {
+		fmt.Println()
 		fmt.Println("Input Jumlah Barang tidak valid!")
 		return
 	}
 
 	if JumlahBarang <= 0 {
+		fmt.Println()
 		fmt.Println("Jumlah Barang tidak valid!")
 		return
 	}
 
 	if JumlahBarang > (arrayBarang[indexBarang].Stok + selectedItem.JumlahBarang) {
+		fmt.Println()
 		fmt.Println("Stok barang tidak mencukupi!")
 		return
 	}
@@ -581,24 +643,30 @@ func subUbahJumlahBarangTransaksi(arrayTransaksi *[NMAX]Transaksi, indexTransaks
 		arrayTransaksi[indexTransaksi].TotalHarga += arrayTransaksi[indexTransaksi].Item[i].HargaBarang
 	}
 
-	fmt.Println("Jumlah Barang berhasil diubah dari Transaksi !")
+	fmt.Println()
+	fmt.Println("Jumlah Barang berhasil diubah dari Transaksi!")
+
+	subLogTransaksiPagination(*arrayTransaksi, indexTransaksi, indexTransaksi+1)
 }
 
 func subHapusBarangTransaksi(arrayTransaksi *[NMAX]Transaksi, indexTransaksi int, arrayBarang *[NMAX]Barang, nBarang int) {
 	fmt.Println()
 	fmt.Println("Hapus Barangd dari Transaksi")
 	fmt.Println(">>>")
+	fmt.Println()
 
 	var IDBarang int
 	fmt.Print("Masukkan ID Barang: ")
 	_, err := fmt.Scan(&IDBarang)
 	if err != nil {
+		fmt.Println()
 		fmt.Println("Input ID Barang tidak valid!")
 		return
 	}
 
 	indexBarang := IDtoIndexBarang(*arrayBarang, nBarang, IDBarang)
 	if indexBarang == -1 {
+		fmt.Println()
 		fmt.Println("ID Barang tidak ditemukan!")
 		return
 	}
@@ -611,6 +679,7 @@ func subHapusBarangTransaksi(arrayTransaksi *[NMAX]Transaksi, indexTransaksi int
 	}
 
 	if indexSubTransaksi == -1 {
+		fmt.Println()
 		fmt.Println("ID Barang tidak ditemukan pada transaksi ini!")
 		return
 	}
@@ -630,6 +699,7 @@ func subHapusBarangTransaksi(arrayTransaksi *[NMAX]Transaksi, indexTransaksi int
 		arrayTransaksi[indexTransaksi].TotalHarga += arrayTransaksi[indexTransaksi].Item[i].HargaBarang
 	}
 
+	fmt.Println()
 	fmt.Println("Barang berhasil dihapus dari Transaksi!")
 }
 
