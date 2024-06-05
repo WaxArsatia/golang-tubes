@@ -37,19 +37,19 @@ type Transaksi struct {
 }
 
 const (
-	SortBarangIDDesc int = iota
-	SortBarangNamaAsc
-	SortBarangNamaDesc
-	SortBarangHargaAsc
-	SortBarangHargaDesc
-	SortBarangStokAsc
-	SortBarangStokDesc
+	SortBarangIDDesc    int = 0
+	SortBarangNamaAsc   int = 1
+	SortBarangNamaDesc  int = 2
+	SortBarangHargaAsc  int = 3
+	SortBarangHargaDesc int = 4
+	SortBarangStokAsc   int = 5
+	SortBarangStokDesc  int = 6
 )
 
 const (
-	SortTransaksiIDDesc int = iota
-	SortTransaksiTotalHargaAsc
-	SortTransaksiTotalHargaDesc
+	SortTransaksiIDDesc         int = 0
+	SortTransaksiTotalHargaAsc  int = 1
+	SortTransaksiTotalHargaDesc int = 2
 )
 
 func main() {
